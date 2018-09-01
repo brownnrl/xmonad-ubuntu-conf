@@ -53,7 +53,8 @@ xrandr | grep 'DP-1 connected' | ifne xrandr --output DP-1 --auto --left-of LVDS
 #
 
 # To set your backgrounds, run nitrogren /path/to/images
-nitrogen --restore &
+# nitrogen --restore &
+variety &
 
 
 #
