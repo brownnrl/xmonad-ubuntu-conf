@@ -1,16 +1,16 @@
 xmonad-ubuntu-conf
 ==================
 
-My xmonad config for Ubuntu 16.04, including package list, config files, and instructions. If you're on a different Ubuntu LTS release, take a look at the different branches available to see if there is one for you. The master branch is typically for the newest LTS.
+My xmonad config for Ubuntu 18.04, including package list, config files, and instructions. If you're on a different Ubuntu LTS release, take a look at the different branches available to see if there is one for you. The master branch is typically for the newest LTS.
 
-**Warning**: this is not yet thoroughly tested on 16.04. I was pleasantly surprised to find I didn't really need to change things much for Xenial -- we'll see if anything surfaces after I've used it for a while!
+**Warning**: this is not yet thoroughly tested on 18.04. I had to make a few minor changes for Bionic, but I have only tried it out on one machine so far, and only in a single screen configuration. If you're on a single-screen configuration, give it a shot and let me know if it works for you! Things are still a bit... weird on multi-monitor setups.
 
 Overview
 --------
 
 What you're looking at is my personal xmonad configuration setup, heavily commented and organized as clearly as I could manage.
 
-I have been using some form of this setup on a daily basis for over five years now in my work as a web developer. An xmonad configuration usually ends up being a very individualized thing, but I thought it would be valuable to share this as a starting point for people new to xmonad. I know that when I was starting with xmonad I found reading other people's configuration files the best way to learn. I hope you will find this equally helpful.
+I have been using some form of this setup on a daily basis since 2011 in my work as a web developer. An xmonad configuration usually ends up being a very individualized thing, but I thought it would be valuable to share this as a starting point for people new to xmonad. I know that when I was starting with xmonad I found reading other people's configuration files the best way to learn. I hope you will find this equally helpful.
 
 This configuration has the following features and properties:
 * Lightweight standalone configuration, not intended to be run inside Gnome or XFCE.
@@ -18,9 +18,9 @@ This configuration has the following features and properties:
 * A restrained but useful set of layout options. I have tried to stick with simple, flexible layouts which are useful on a daily basis.
 * Basic status bar and task tray configuration using xmobar and stalonetray
 * Relies on synapse for launching applications
-* Includes tray icons for network management, chat, and remote desktop connections.
-* Adds xmonad as an option to your Unity login greeter, including a proper icon.
-* Wallpaper handling and support for basic transparency.
+* Includes tray icon for network management
+* Adds xmonad as an option to your GDM3 login greeter
+* Wallpaper handling and support for basic transparency
 
 
 Installation
@@ -36,7 +36,7 @@ Finally, this whole process is intended for someone who likes to mess with their
 
 ### Checkout repository ###
 
-As your first step, you should check out this github repository or download an archive of the files. The master branch is currently for 16.04; there are separate branches for older LTS releases of Ubuntu.
+As your first step, you should check out this github repository or download an archive of the files. The master branch is currently for 18.04; there are separate branches for older LTS releases of Ubuntu.
 
 The contents of the repository should be placed in your home directory in a folder called ".xmonad". Note that if you have already installed xmonad, this directory will already exist! If you want to be able to revert to your existing configuration, you should rename this directory to something like ".xmonad-original".
 
@@ -54,21 +54,19 @@ This xmonad configuration uses a variety of different packages. Some of them are
 
 If you want to install the entire list of packages, you can run the following command:
 
-    sudo apt-get install xmonad libghc-xmonad-dev libghc-xmonad-contrib-dev xmobar xcompmgr nitrogen stalonetray moreutils synapse consolekit ssh-askpass-gnome thunar terminator remmina
+    sudo apt-get install xmonad libghc-xmonad-dev libghc-xmonad-contrib-dev xmobar xcompmgr nitrogen stalonetray moreutils synapse ssh-askpass-gnome
 
 If you prefer to pick and choose, the following packages can be omitted while still maintaining the overall functionality:
- * remmina
- * thunar
  * ssh-askpass-gnome
 
 ### Install customized xmonad session ###
 
-To launch our xmonad session, we want to be able to pick it from the normal list of sessions available in Ubuntu's login screen, which is called "Unity Greeter". To make our customized version of Xmonad show up in the list, you will need to copy the file xmonad.desktop to the location where the greeter expects to find definitions of all the available sessions. You might also want to back up the default xmonad desktop session in case you want to revert later on.
+To launch our xmonad session, we want to be able to pick it from the normal list of sessions available in Ubuntu's login screen. To make our customized version of Xmonad show up in the list, you will need to copy the file xmonad.desktop to the location where the greeter expects to find definitions of all the available sessions. You might also want to back up the default xmonad desktop session in case you want to revert later on.
 
     sudo mv /usr/share/xsessions/xmonad.desktop /usr/share/xsessions/xmonad.desktop.original
     sudo cp ~/.xmonad/xmonad.desktop /usr/share/xsessions
 
-Ubuntu's packages do not include any icon for xmonad when showing it in the login screen. This means its icon defaults to a plain white circle. But, no worries... I've got you covered. Just copy the custom xmonadbadge into the appropriate location for a nice consistent login experience. 
+The default session picker as of Ubuntu Bionic is GDM3. Earlier versions user "Unity Greeter". GDM3 doesn't support any kind of representative icon for your sessions, but in case you are still using Unity Greeter, I have provided a suitable icon. Just copy the custom xmonad badge into the appropriate location for a nice consistent login experience. 
 
     sudo cp ~/.xmonad/images/custom_xmonad_badge.png /usr/share/unity-greeter
 
@@ -83,11 +81,12 @@ If you don't give Gnome some hints about how it should look, anything still base
 Launching xmonad
 ----------------
 
-Once installed, xmonad will show up in the Unity greeter, where you normally choose which desktop you want to run. If you've just finished installing it:
+Once installed, xmonad will show up in GDM when you log in, where you normally choose which desktop you want to run. If you've just finished installing it:
 1. Log out.
-2. Click on the round badge next to your user name.
-3. Choose "Xmonad" from the list.
-4. Log in again.
+2. Click on your user name in the list.
+3. Click on the little gear to choose which desktop you want.
+4. Choose "Xmonad" from the list.
+5. Log in again.
 
 
 Using xmonad
@@ -100,7 +99,7 @@ In this section I provide a quick start guide to using xmonad, with an emphasis 
 When you start xmonad for the first time, you're not looking at much. You will see a status bar near the top of your screen, and that's about it.
 
 There are no menus for selecting programs to run. Everything is launched in one of two ways:
-* `mod-shift-enter`: launches a terminal window (Terminator). You can run other programs from the terminal.
+* `mod-shift-enter`: launches a terminal window. You can run other programs from the terminal.
 * `ctrl-space`: launches a Synapse prompt. You can run any program by starting to type its name, and then hitting enter once Synapse has found the program you want. 
 
 ### The status bar
@@ -114,7 +113,7 @@ The status bar can be divided into 6 major zones.  Running from left to right we
 3. The **title area**, which shows the title of the currently focused window. It's up there to save the vertical space that would normally be consumed by title bars on windows.
 4. The **system information area**, which displays a few useful pieces of system information, including: battery charge status, CPU utilization, memory usage, and current volume.
 5. The **date**.
-6. The **icon tray**, which is home to any status icons for programs you are running. By defaults you should see a network manager icon, a chat icon, and an icon for launching remote desktop connections.
+6. The **icon tray**, which is home to any status icons for programs you are running. By defaults you should see just a network manager icon. 
 
 If at any point you would like to reclaim some extra vertical space on your screen, you can toggle the visiblity of the status bar by hitting `mod-b`. 
 
@@ -134,8 +133,6 @@ There are six main layouts I have provided in my configuration:
 4. **Grid** layout tries to equally distribute windows in the available space, increasing the number of columns and rows as necessary. The master pane is at top left, but does not get priority over other windows in any other way. Not a resizeable layout.
 5. **ThreeCol** layout puts the large master pane in the center of the screen taking up most of the available screen space. Remaining windows tile to both the left and right of the master pane. This layout is resizeable. **NOTE:** I found myself using this rarely so I commented it in the xmonad.hs. To try it, uncomment the line referring to ThreeColMid in the list of layouts in xmonad.hs.
 6. **Circle** layout places the master pane in the center of the screen, with space on all sides. Remaining windows appear positioned in a circle around it, partially overlapping it. The focused window is brought to the front so you can see all of its contents. Not a resizable layout. **NOTE:** I found myself using this rarely so I commented it in the xmonad.hs. To try it, uncomment the line referring to Circle in the list of layouts in xmonad.hs. 
-
-In addition to the six main layouts, there is also a special layout called **IM Grid**, which is only activated on the Chat workspace. See the Workspaces section for more information.
 
 Now would be a good time to try out the layouts to get a sense of what they offer. Hit `mod-shift-enter` several times to launch some empty terminals, and then experiment with hitting `mod-space` to cycle through the different layouts to see what they are like.
 
@@ -195,7 +192,7 @@ Associating workspaces with number pad keys has a number of advantages:
 The twelve workspaces I use are named for the kinds of work I regularly do. I have tried to train myself to always keep certain types of work on specific workspaces, because it makes it much easier to keep track of what I'm doing and find it again if I get interrupted.
 
 You are likely to want to rename these to suit your own needs. Nevertheless, here's an explanation of what I use each workspace for in case it gives you some ideas:
-* Chat: all instant messenger sessions are launched here.
+* Chat: right now I am using this for Slack
 * Dbg: debugging. Depending on what I'm doing this may contain a terminal or a browser.
 * Pix: image manipulation; specifically, I run GIMP on this workspace.
 * Docs: documentation. I try to keep whatever docs I am referring to on this workspace.
@@ -227,7 +224,7 @@ Note that when you move a window to a workspace using numbers or the keypad, the
 #### Special workspaces
 
 There are two workspaces which have a special configuration. They are locked to a special layout, and certain programs will always spawn on those workspaces.
-* The **Chat** workspace (7) uses a special chat-focused layout called **IM Grid**. In this layout, one window is identified as the "roster" and it is displayed tall and skinny on the left side of the screen. The remaining windows, which are individual chat sessions, are displayed in a grid to the right of the roster area. This default configuration assumes you are using Empathy for your chat software, and any Empathy windows that are launched will automatically get sent to the chat workspace.
+* The **Chat** workspace (7) is where I keep my Slack session. It's configured to always use a full screen layout. In addition, any Slack windows that are launched will automatically be sent to this workspace.
 * The **Pix** workspace (9) is locked on the **ThreeCol** layout, which is especially suitable for working with GIMP because you can put the image you are working on in the master pane and let all the panels tile to the left and right of the image. Any GIMP windows that are launched will automatically be sent to this workspace.
 
 ### Multiple monitors
@@ -288,10 +285,8 @@ If you make changes to `start-xmonad`, the only way to see the changes is to log
 The `startup-hook` script runs immediately after xmonad is initialized, via the startupHook mechanism of xmonad itself. 
 
 You should take a look at editing the `startup-hook` script if you want to modify any of the software that is started by default, such as:
-* applicaiton launcher (synapse)
+* application launcher (synapse)
 * network management software
-* chat software
-* remote desktop software
 * ssh keychain unlocking prompt
 
 Note that by default I have commented out the ssh keychain unlocking prompt, assuming that this would be annoying when getting started with xmonad. If you are a heavy ssh user you might consider uncommenting that feature.
@@ -336,26 +331,26 @@ In particular I have noticed problems with machines that have more than one soun
 Other Notes
 -----------
 
+### Font Issues with QT4 Applications (Specifically, Zeal) ###
+
+I use a documentation browser tool called Zeal and when I started it up, my UI fonts were teensy-tiny. Turns out this is because Zeal is a Qt application, with completely separate font configuration from GTK applications. There is some kind of bug with Qt that I have not been able to work around yet.
+
+If this is a big issue for you you might want to check out the QT environment variables for scaling your application: https://doc.qt.io/qt-5/highdpi.html#high-dpi-support-in-qt
+
+Or, take a look at these related issues on Zeal's issue tracker:
+* https://github.com/zealdocs/zeal/issues/786
+* https://github.com/zealdocs/zeal/issues/869
+
+Installing and running the `qtconfig-qt4` command didn't seem to carry across to Zeal. I'm not sure why! Would appreciate any information about why this might be the case...
+
+
 ### Synapse Activation Key Bug ###
 
 As of this writing, the current version of Synapse has a bug which prevents you from changing the activation key. You can change it, but when you quit and restart Synapse or restart you computer it will revert to the default Ctrl-Space.
 
-### Preventing Nautilus From Showing The Desktop ###
-
-When you launch Nautilus (aka "Files") in order to browse the filesystem, it activates some parts of the Gnome desktop. For the most part this is fine, but one annoying side effect is that you may find your Gnome desktop showing up, complete with its background and icons for anything in your Desktop folder. Ugh! 
-
-Luckily, there is a way to prevent this. However, if you are still using Unity or Gnome as well as Xmonad, this change will cause your desktop to disappear when in those environments too, so be aware!
-
-You'll need to change some Gnome settings using a tool called `dconf-editor`. To install and launch the tool:
-
-    sudo apt-get install dconf-tools
-    dconf-editor
-
-Once you're in `dconf-editor`, navigate to this node: org -> gnome -> desktop -> background. Then uncheck the settings "draw background" and "show desktop icons".
-
 ### GIMP 2.8 and Single Window Mode ###
 
-If you are a user of GIMP, you may have found the GIMP experience in xmonad somewhat lacking while using versions before 2.8. This is because xmonad tries to manage all your palettes as tiles which can lead to a somewhat confusing interface. However, with GIMP 2.8 (the default version in Ubuntu 14.04), single-window mode has been introduced.
+If you are a user of GIMP, you may have found the GIMP experience in xmonad somewhat lacking while using versions before 2.8. This is because xmonad tries to manage all your palettes as tiles which can lead to a somewhat confusing interface. However, with GIMP 2.8 (the default version in Ubuntu versions from 14.04 on), single-window mode has been introduced.
 
 It's highly recommended to turn single window mode on when using Gimp. In the "Windows" menu, choose "Single-Window Mode" to activate it.
 
