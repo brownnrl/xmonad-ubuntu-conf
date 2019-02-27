@@ -17,7 +17,7 @@ This configuration has the following features and properties:
 * Workspace layout concept based on a grid corresponding to the number pad. Workspaces can be selected with numpad keys, number keys, or via arrows in a consistent and intuitive fashion.
 * A restrained but useful set of layout options. I have tried to stick with simple, flexible layouts which are useful on a daily basis.
 * Basic status bar and task tray configuration using xmobar and stalonetray
-* Relies on synapse for launching applications
+* Relies on albert for launching applications
 * Includes tray icon for network management
 * Adds xmonad as an option to your GDM3 login greeter
 * Wallpaper handling and support for basic transparency

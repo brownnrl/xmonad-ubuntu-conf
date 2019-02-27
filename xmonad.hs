@@ -194,8 +194,8 @@ myKeyBindings =
     ((myModMask, xK_b), sendMessage ToggleStruts)
     , ((myModMask, xK_a), sendMessage MirrorShrink)
     , ((myModMask, xK_z), sendMessage MirrorExpand)
-    , ((myModMask, xK_p), spawn "synapse")
-    , ((myModMask .|. mod1Mask, xK_space), spawn "synapse")
+    , ((myModMask, xK_p), spawn "albert")
+    , ((myModMask .|. mod1Mask, xK_space), spawn "albert")
     , ((myModMask, xK_u), focusUrgent)
     , ((myModMask .|. shiftMask, xK_l), spawn "gnome-screensaver-command -l && xset dpms force off")
     , ((0, 0x1008FF12), spawn "amixer -q set Master toggle")
@@ -249,7 +249,7 @@ myKeyBindings =
 
 myManagementHooks :: [ManageHook]
 myManagementHooks = [
-  resource =? "synapse" --> doIgnore
+  resource =? "albert" --> doIgnore
   , resource =? "stalonetray" --> doIgnore
   , className =? "rdesktop" --> doFloat
   , className =? "Gnome-calculator" --> doFloat
