@@ -17,6 +17,12 @@
 #    empathy -h -n &
 #fi
 
+# Screen timeout
+# Turn the screen off
+xset s off
+# after timeout in seconds
+xset s 300
+
 if [ -z "$(pgrep hexchat)" ] ; then
     hexchat &
 fi

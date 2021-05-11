@@ -198,6 +198,8 @@ myKeyBindings =
     , ((myModMask .|. mod1Mask, xK_space), spawn "albert") -}
     , ((myModMask, xK_u), focusUrgent)
     , ((myModMask .|. shiftMask, xK_l), spawn "gnome-screensaver-command -l && xset dpms force off")
+    , ((myModMask .|. shiftMask, xK_Print), spawn "scrot -u /tmp/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'")
+    , ((myModMask, xK_Print), spawn "scrot /tmp/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'")
     , ((0, 0x1008FF12), spawn "amixer -q set Master toggle")
     , ((0, 0x1008FF11), spawn "amixer -q set Master 10%-")
     , ((0, 0x1008FF13), spawn "amixer -q set Master 10%+")
