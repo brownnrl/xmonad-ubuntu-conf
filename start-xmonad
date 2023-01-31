@@ -102,15 +102,14 @@ variety &
 #
 stalonetray \
   --icon-gravity E \
-  --geometry 5x1-0+0 \
-  --max-geometry 5x1-0+0 \
+  --geometry 6x1-0+0 \
+  --max-geometry 6x1-0+0 \
   --background '#000000' \
   --skip-taskbar \
-  --icon-size 24 \
+  --icon-size 29 \
   --slot-size $STALONETRAY_SLOT_SIZE \
   --kludges force_icons_size \
-  --window-strut none \
-&
+  --window-strut none &
 
 # Run the gnome-keyring-daemon to avoid issues you otherwise may encounter
 # when using gnome applications which expect access to the keyring, such
