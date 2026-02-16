@@ -23,6 +23,8 @@ xset s off
 # after timeout in seconds
 xset s 300
 
+pgrep -x dunst >/dev/null || dunst &
+
 if [ -z "$(pgrep hexchat)" ] ; then
     hexchat &
 fi
@@ -35,6 +37,10 @@ fi
 # Applet for managing print jobs from the tray.
 if [ -z "$(pgrep system-config-printer-applet)" ] ; then
     system-config-printer-applet &
+fi
+
+if [ -z "$(pgrep -x variety)" ] ; then
+    variety --no-daemon &
 fi
 
 #

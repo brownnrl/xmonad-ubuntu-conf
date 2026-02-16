@@ -100,16 +100,8 @@ variety &
 # - window-strut "none" means windows are allowed to cover the tray. In
 #   other words, trust xmonad to handle this part.
 #
-stalonetray \
-  --icon-gravity E \
-  --geometry 6x1-0+0 \
-  --max-geometry 6x1-0+0 \
-  --background '#000000' \
-  --skip-taskbar \
-  --icon-size 29 \
-  --slot-size $STALONETRAY_SLOT_SIZE \
-  --kludges force_icons_size \
-  --window-strut none &
+echo "this is a test to see if this script is working `date`" >> /home/nelson/test_xmonad_text.txt
+stalonetray --icon-gravity E --geometry 6x1-0+0  --max-geometry 6x1-0+0 --background '#000000' --skip-taskbar --icon-size 29 --slot-size 24 --kludges force_icons_size --window-strut none &
 
 # Run the gnome-keyring-daemon to avoid issues you otherwise may encounter
 # when using gnome applications which expect access to the keyring, such
