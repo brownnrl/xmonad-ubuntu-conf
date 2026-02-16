@@ -325,31 +325,34 @@ myKeys = myKeyBindings ++
 
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
-  xmonad $ withUrgencyHook NoUrgencyHook $ def {
-    focusedBorderColor = myFocusedBorderColor
-  , normalBorderColor = myNormalBorderColor
-  , terminal = myTerminal
-  , borderWidth = myBorderWidth
-  , layoutHook = myLayouts
-  , workspaces = myWorkspaces
-  , modMask = myModMask
-  , handleEventHook = docksEventHook <+> fullscreenEventHook
-  , startupHook = do
-      setWMName "LG3D"
-      windows $ W.greedyView startupWorkspace
-      spawn "~/.xmonad/startup-hook"
-  , manageHook = manageHook def
-      <+> composeAll myManagementHooks
-      <+> manageDocks
-  , logHook = dynamicLogWithPP xmobarPP {
-      ppOutput = hPutStrLn xmproc
-      , ppTitle = xmobarColor myTitleColor "" . shorten myTitleLength
-      , ppCurrent = xmobarColor myCurrentWSColor ""
-        . wrap myCurrentWSLeft myCurrentWSRight
-      , ppVisible = xmobarColor myVisibleWSColor ""
-        . wrap myVisibleWSLeft myVisibleWSRight
-      , ppUrgent = xmobarColor myUrgentWSColor ""
-        . wrap myUrgentWSLeft myUrgentWSRight
-    }
-  }
-    `additionalKeys` myKeys
+  xmonad
+    $ docks
+    $ withUrgencyHook NoUrgencyHook
+    $ def {
+        focusedBorderColor = myFocusedBorderColor
+      , normalBorderColor  = myNormalBorderColor
+      , terminal           = myTerminal
+      , borderWidth        = myBorderWidth
+      , layoutHook         = myLayouts
+      , workspaces         = myWorkspaces
+      , modMask            = myModMask
+      , handleEventHook    = fullscreenEventHook
+      , startupHook        = do
+          setWMName "LG3D"
+          windows $ W.greedyView startupWorkspace
+          spawn "~/.xmonad/startup-hook"
+      , manageHook         = manageHook def
+          <+> composeAll myManagementHooks
+          <+> manageDocks
+      , logHook            = dynamicLogWithPP xmobarPP {
+            ppOutput  = hPutStrLn xmproc
+          , ppTitle   = xmobarColor myTitleColor "" . shorten myTitleLength
+          , ppCurrent = xmobarColor myCurrentWSColor ""
+              . wrap myCurrentWSLeft myCurrentWSRight
+          , ppVisible = xmobarColor myVisibleWSColor ""
+              . wrap myVisibleWSLeft myVisibleWSRight
+          , ppUrgent  = xmobarColor myUrgentWSColor ""
+              . wrap myUrgentWSLeft myUrgentWSRight
+          }
+      }
+      `additionalKeys` myKeys
