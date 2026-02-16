@@ -39,8 +39,13 @@ if [ -z "$(pgrep system-config-printer-applet)" ] ; then
     system-config-printer-applet &
 fi
 
-if [ -z "$(pgrep -x variety)" ] ; then
-    variety --no-daemon &
+# Start Variety after X and DBus are ready
+if ! pgrep -x variety >/dev/null; then
+    (
+        sleep 1
+	mkdir -p /tmp/xmonad
+        variety >> /tmp/xmonad/variety.log 2>&1
+    ) &
 fi
 
 #

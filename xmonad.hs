@@ -28,7 +28,14 @@ import XMonad.Util.Run
 import XMonad.Hooks.DynamicLog
 import XMonad.Actions.Plane
 import XMonad.Hooks.ManageDocks
+  ( docks
+  , manageDocks
+  , docksEventHook
+  , avoidStruts
+  , ToggleStruts(..)
+  )
 import XMonad.Hooks.UrgencyHook
+import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
 import Data.Ratio ((%))
@@ -194,6 +201,8 @@ myKeyBindings =
     ((myModMask, xK_b), sendMessage ToggleStruts)
     , ((myModMask, xK_a), sendMessage MirrorShrink)
     , ((myModMask, xK_z), sendMessage MirrorExpand)
+    , ((myModMask, xK_p), spawn "rofi -show drun")
+    , ((myModMask, xK_Tab), spawn "rofi -show window")
     {- , ((myModMask, xK_p), spawn "albert")
     , ((myModMask .|. mod1Mask, xK_space), spawn "albert") -}
     , ((myModMask, xK_u), focusUrgent)
@@ -326,33 +335,41 @@ myKeys = myKeyBindings ++
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
   xmonad
+    $ ewmhFullscreen
+    $ ewmh
     $ docks
     $ withUrgencyHook NoUrgencyHook
-    $ def {
-        focusedBorderColor = myFocusedBorderColor
-      , normalBorderColor  = myNormalBorderColor
-      , terminal           = myTerminal
-      , borderWidth        = myBorderWidth
-      , layoutHook         = myLayouts
-      , workspaces         = myWorkspaces
-      , modMask            = myModMask
-      , handleEventHook    = fullscreenEventHook
-      , startupHook        = do
-          setWMName "LG3D"
-          windows $ W.greedyView startupWorkspace
-          spawn "~/.xmonad/startup-hook"
-      , manageHook         = manageHook def
-          <+> composeAll myManagementHooks
-          <+> manageDocks
-      , logHook            = dynamicLogWithPP xmobarPP {
-            ppOutput  = hPutStrLn xmproc
-          , ppTitle   = xmobarColor myTitleColor "" . shorten myTitleLength
-          , ppCurrent = xmobarColor myCurrentWSColor ""
+    $ def
+        { focusedBorderColor = myFocusedBorderColor
+        , normalBorderColor  = myNormalBorderColor
+        , terminal           = myTerminal
+        , borderWidth        = myBorderWidth
+        , layoutHook         = myLayouts
+        , workspaces         = myWorkspaces
+        , modMask            = myModMask
+
+        -- docks handles the docks event hook internally now.
+        -- keep fullscreen handling:
+        , handleEventHook    = fullscreenEventHook
+
+        , startupHook        = do
+            setWMName "LG3D"
+            windows $ W.greedyView startupWorkspace
+            spawn "~/.xmonad/startup-hook"
+
+        , manageHook         = manageHook def
+            <+> composeAll myManagementHooks
+            <+> manageDocks
+
+        , logHook            = dynamicLogWithPP xmobarPP
+            { ppOutput  = hPutStrLn xmproc
+            , ppTitle   = xmobarColor myTitleColor "" . shorten myTitleLength
+            , ppCurrent = xmobarColor myCurrentWSColor ""
               . wrap myCurrentWSLeft myCurrentWSRight
-          , ppVisible = xmobarColor myVisibleWSColor ""
+            , ppVisible = xmobarColor myVisibleWSColor ""
               . wrap myVisibleWSLeft myVisibleWSRight
-          , ppUrgent  = xmobarColor myUrgentWSColor ""
+            , ppUrgent  = xmobarColor myUrgentWSColor ""
               . wrap myUrgentWSLeft myUrgentWSRight
-          }
-      }
-      `additionalKeys` myKeys
+            }
+        }
+    `additionalKeys` myKeys
