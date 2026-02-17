@@ -1,32 +1,63 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# get-volume script returns the current volume status of your system in a
-# format suitable for use in xmobar. I found this script on this page:
-#   http://karuppuswamy.com/wordpress/2011/09/03/how-to-get-a-productive-desktop-based-on-xmonad-and-xmobar/
-# 
-# Original author unknown -- credited to "a nice guy online".  :-)
-#
-# Note that if this is not working for your hardware, it may be because 
-# you have more than one sound card. In that case you may be able to make
-# it work by adding arguments to the amixer command in the first line.
-# For example, the "-c N" argument makes it choose the card identified by
-# N, where N is an integer. If you have two cards, try using "-c 1" to make
-# it use the second card.
+# Prefer PipeWire (wpctl)
+if command -v wpctl >/dev/null 2>&1; then
+  out="$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)"
+  # Examples:
+  # "Volume: 0.35"
+  # "Volume: 0.35 [MUTED]"
+  if [[ -n "${out}" ]]; then
+    vol="$(awk '{print $2}' <<<"${out}" | sed 's/[^0-9.]*//g')"
+    muted="$(grep -qi muted <<<"${out}" && echo yes || echo no)"
+    if [[ -n "${vol}" ]]; then
+      pct="$(python3 - <<PY
+v=float("${vol}")
+print(int(round(v*100)))
+PY
+)"
+      if [[ "${muted}" == "yes" ]]; then
+        echo "MUT"
+      else
+        echo "${pct}%"
+      fi
+      exit 0
+    fi
+  fi
+fi
 
-str=`amixer -D pulse sget Master,0`
-str1=${str#Simple*[}
-v1=${str1%%]*]}
-il=`expr index "$str1" [`
-o="off"
-mutel=''
-if [ ${str1:$il:3} == $o ]; then mutel='M'; fi
-s=${str1:0:1}
-str2=${str1#${str1:0:1}*[}
-str1=$str2
-str2=${str1#${str1:0:1}*[}
-ir=`expr index "$str2" [`
-muter=''
-if [ ${str2:0:3} = $o ]; then muter='[M]'; fi
-v2=${str2%\]}
-v=${v1}\ $muter
-echo $v
+# PulseAudio fallback (pactl)
+if command -v pactl >/dev/null 2>&1; then
+  sink="$(pactl get-default-sink 2>/dev/null || true)"
+  if [[ -n "${sink}" ]]; then
+    muted="$(pactl get-sink-mute "${sink}" 2>/dev/null | awk '{print $2}' || true)"
+    volline="$(pactl get-sink-volume "${sink}" 2>/dev/null | head -n1 || true)"
+    pct="$(grep -oE '[0-9]+%' <<<"${volline}" | head -n1 | tr -d '%' || true)"
+    if [[ "${muted}" == "yes" ]]; then
+      echo "MUT"
+      exit 0
+    fi
+    if [[ -n "${pct}" ]]; then
+      echo "${pct}%"
+      exit 0
+    fi
+  fi
+fi
+
+# ALSA fallback (no pulse device)
+if command -v amixer >/dev/null 2>&1; then
+  out="$(amixer -D default get Master 2>/dev/null || true)"
+  pct="$(grep -oE '[0-9]+%' <<<"${out}" | tail -n1 | tr -d '%' || true)"
+  mute="$(grep -oE '\[(on|off)\]' <<<"${out}" | tail -n1 | tr -d '[]' || true)"
+  if [[ "${mute}" == "off" ]]; then
+    echo "MUT"
+    exit 0
+  fi
+  if [[ -n "${pct}" ]]; then
+    echo "${pct}%"
+    exit 0
+  fi
+fi
+
+echo "-"
+exit 0

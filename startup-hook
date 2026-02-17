@@ -39,6 +39,28 @@ if [ -z "$(pgrep system-config-printer-applet)" ] ; then
     system-config-printer-applet &
 fi
 
+# system tray (top-right)
+if [ -z "$(pgrep -x stalonetray)" ]; then
+
+stalonetray \
+  --geometry 10x1+2380+0 \
+  --icon-size 18 \
+  --slot-size 18 \
+  --grow-gravity NE \
+  --icon-gravity NE \
+  --background "#000000" \
+  --transparent \
+  --tint-color "#000000" \
+  --tint-level 0 \
+  --window-layer top \
+  --window-strut top \
+  --skip-taskbar \
+  --sticky \
+  --kludges force_icons_size \
+  >> ~/.xmonad/stalonetray.log 2>&1 &
+fi
+
+
 # Start Variety after X and DBus are ready
 if ! pgrep -x variety >/dev/null; then
     (
@@ -52,10 +74,7 @@ fi
 # APPLICATION LAUNCHER
 #
 
-# Use albert as our app launcher.
-if [ -z "$(pgrep albert)" ] ; then
-    albert &
-fi
+# ROFI, launched separately
 
 # On login, we unlock the ssh keychain so we're not prompted for 
 # passphrases later. We pipe /dev/null to ssh-add to make it realize 

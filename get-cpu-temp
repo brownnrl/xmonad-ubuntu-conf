@@ -1,3 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-python -c "import sys; print(max(sys.argv[1:]) if sys.argv[1:] else '-')" $(sensors | grep "Core" | awk '{print $3}' | grep -oh '[0-9.]*' | tr '\n' ' ')
+if ! command -v sensors >/dev/null 2>&1; then
+  echo "-"
+  exit 0
+fi
+
+temp=$(sensors 2>/dev/null | awk '/Tctl:/{gsub(/[^0-9.]/,"",$2); print int($2); exit}')
+
+if [ -z "$temp" ]; then
+  echo "-"
+else
+  echo "${temp}°C"
+fi

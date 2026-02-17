@@ -27,6 +27,7 @@ import XMonad.Util.EZConfig
 import XMonad.Util.Run
 import XMonad.Hooks.DynamicLog
 import XMonad.Actions.Plane
+import Graphics.X11.ExtraTypes.XF86
 import XMonad.Hooks.ManageDocks
   ( docks
   , manageDocks
@@ -209,10 +210,14 @@ myKeyBindings =
     , ((myModMask .|. shiftMask, xK_l), spawn "gnome-screensaver-command -l && xset dpms force off")
     , ((myModMask .|. shiftMask, xK_o), spawn "sleep 10 && xset dpms force off")
     , ((myModMask .|. shiftMask, xK_Print), spawn "scrot -u /tmp/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'")
-    , ((myModMask, xK_Print), spawn "scrot /tmp/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'")
-    , ((0, 0x1008FF12), spawn "amixer -q set Master toggle")
+    {- , ((myModMask, xK_Print), spawn "scrot /tmp/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'") -}
+    , ((myModMask, xK_Print), spawn "flameshot gui -c")
+    , ((0, xF86XK_AudioMute), spawn "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
+    , ((0, xF86XK_AudioLowerVolume), spawn "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")
+    , ((0, xF86XK_AudioRaiseVolume), spawn "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+")
+{-  , ((0, 0x1008FF12), spawn "amixer -q set Master toggle")
     , ((0, 0x1008FF11), spawn "amixer -q set Master 10%-")
-    , ((0, 0x1008FF13), spawn "amixer -q set Master 10%+")
+    , ((0, 0x1008FF13), spawn "amixer -q set Master 10%+") -}
   ]
 
 
@@ -260,13 +265,16 @@ myKeyBindings =
 -}
 
 myManagementHooks :: [ManageHook]
-myManagementHooks = [
-  {-resource =? "albert" --> doIgnore -}
-  resource =? "stalonetray" --> doIgnore
-  , className =? "rdesktop" --> doFloat
-  , className =? "Gnome-calculator" --> doFloat
-  , (className =? "Slack") --> doF (W.shift "7:Chat")
-  , (className =? "Gimp-2.8") --> doF (W.shift "9:Pix")
+myManagementHooks =
+  [ resource  =? "stalonetray"          --> doIgnore
+  , className =? "stalonetray"          --> doIgnore
+  , className =? "Rofi"                --> doIgnore
+  , className =? "Nm-applet"           --> doIgnore
+  , className =? "Pavucontrol"         --> doFloat
+  , className =? "Gnome-calculator"    --> doFloat
+  , className =? "rdesktop"            --> doFloat
+  , className =? "Slack"               --> doF (W.shift "7:Chat")
+  , className =? "Gimp-2.8"            --> doF (W.shift "9:Pix")
   ]
 
 
@@ -333,7 +341,7 @@ myKeys = myKeyBindings ++
 -}
 
 main = do
-  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
+  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc >> ~/.xmonad/xmobar.log 2>&1"
   xmonad
     $ ewmhFullscreen
     $ ewmh
