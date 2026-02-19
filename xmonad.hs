@@ -341,7 +341,8 @@ myKeys = myKeyBindings ++
 -}
 
 main = do
-  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc >> ~/.xmonad/xmobar.log 2>&1"
+  xmproc <- spawnPipe "~/.xmonad/run-xmobar.sh"
+
   xmonad
     $ ewmhFullscreen
     $ ewmh
