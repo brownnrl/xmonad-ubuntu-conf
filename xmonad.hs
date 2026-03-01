@@ -40,6 +40,7 @@ import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
 import Data.Ratio ((%))
+import System.IO.Error (catchIOError)
 
 {-
   Xmonad configuration variables. These settings control some of the
@@ -341,7 +342,7 @@ myKeys = myKeyBindings ++
 -}
 
 main = do
-  xmproc <- spawnPipe "~/.xmonad/run-xmobar.sh"
+  xmproc <- spawnPipe "/home/nelson/.xmonad/run-xmobar.sh"
 
   xmonad
     $ ewmhFullscreen
@@ -371,7 +372,7 @@ main = do
             <+> manageDocks
 
         , logHook            = dynamicLogWithPP xmobarPP
-            { ppOutput  = hPutStrLn xmproc
+            { ppOutput  = \s -> catchIOError (hPutStrLn xmproc s) (\_ -> pure ())
             , ppTitle   = xmobarColor myTitleColor "" . shorten myTitleLength
             , ppCurrent = xmobarColor myCurrentWSColor ""
               . wrap myCurrentWSLeft myCurrentWSRight

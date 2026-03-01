@@ -39,27 +39,32 @@ if [ -z "$(pgrep system-config-printer-applet)" ] ; then
     system-config-printer-applet &
 fi
 
-# system tray (top-right)
-if [ -z "$(pgrep -x stalonetray)" ]; then
+# system tray (top-left, dynamic)
+if ! pgrep -x stalonetray >/dev/null; then
+  TRAY_SLOTS=10
+  TRAY_SLOT_SIZE=18
+  TRAY_PX=$((TRAY_SLOTS * TRAY_SLOT_SIZE))
 
-stalonetray \
-  --geometry 10x1+2380+0 \
-  --icon-size 18 \
-  --slot-size 18 \
-  --grow-gravity NE \
-  --icon-gravity NE \
-  --background "#000000" \
-  --transparent \
-  --tint-color "#000000" \
-  --tint-level 0 \
-  --window-layer top \
-  --window-strut top \
-  --skip-taskbar \
-  --sticky \
-  --kludges force_icons_size \
-  >> ~/.xmonad/stalonetray.log 2>&1 &
+  LEFT_LINE=$(xrandr --query | sed -nE 's/^.* connected (primary )?([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+).*/\2 \3 \4 \5/p' | sort -n -k3,3 | head -n 1)
+  LEFT_X=$(echo "$LEFT_LINE" | awk '{print $3}')
+  TRAY_X=$((LEFT_X))
+
+  stalonetray \
+    --geometry ${TRAY_SLOTS}x1+${TRAY_X}+0 \
+    --icon-size 18 \
+    --slot-size 18 \
+    --grow-gravity NW \
+    --icon-gravity NW \
+    --background "#000000" \
+    --tint-color "#000000" \
+    --tint-level 0 \
+    --window-layer top \
+    --window-strut top \
+    --skip-taskbar \
+    --sticky \
+    --kludges force_icons_size \
+    >> ~/.xmonad/stalonetray.log 2>&1 &
 fi
-
 
 # Start Variety after X and DBus are ready
 if ! pgrep -x variety >/dev/null; then
