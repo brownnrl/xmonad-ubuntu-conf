@@ -34,7 +34,8 @@ TRAY_SLOTS=10
 TRAY_SLOT_SIZE=18
 TRAY_PX=$((TRAY_SLOTS * TRAY_SLOT_SIZE))
 
-LEFT_LINE=$(xrandr --query | sed -nE 's/^.* connected (primary )?([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+).*/\2 \3 \4 \5/p' | sort -n -k3,3 | head -n 1)
+DP_LINE=$(xrandr --query | sed -nE '/^DP-[^ ]* connected/ s/^.* connected (primary )?([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+).*/\2 \3 \4 \5/p' | head -n 1)
+LEFT_LINE=${DP_LINE:-$(xrandr --query | sed -nE 's/^.* connected (primary )?([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+).*/\2 \3 \4 \5/p' | sort -n -k3,3 | head -n 1)}
 LEFT_W=$(echo "$LEFT_LINE" | awk '{print $1}')
 LEFT_X=$(echo "$LEFT_LINE" | awk '{print $3}')
 BAR_X=$((LEFT_X + TRAY_PX))
@@ -51,4 +52,8 @@ sed -E "s/^([[:space:]]*)position[[:space:]]*=.*/\\1position = Static { xpos = $
 
 # Run xmobar with logs captured.
 # stdbuf forces line-buffered output so you see the last lines before death.
-exec stdbuf -oL -eL xmobar -x 0 "$XMO_CONF" >"$d/stdout.log" 2>"$d/stderr.log"
+XMOBAR_BIN="/data-mirrored/projects/xmobar/xmobar/dist-newstyle/build/x86_64-linux/ghc-9.6.7/xmobar-0.50/x/xmobar/build/xmobar/xmobar"
+if [ ! -x "$XMOBAR_BIN" ]; then
+  XMOBAR_BIN="xmobar"
+fi
+exec stdbuf -oL -eL "$XMOBAR_BIN" -x 0 "$XMO_CONF" >"$d/stdout.log" 2>"$d/stderr.log"
