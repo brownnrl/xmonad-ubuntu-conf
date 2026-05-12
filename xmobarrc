@@ -26,7 +26,7 @@ Config {
   -- want to be taking up the remainer of the space on the right side
   -- of your screen.
   -- position = TopW L 94, 
-  position = TopW L 97,
+  position = TopW L 98,
 
   -- list of commands which gather information about your system for
   -- presentation in the bar. 

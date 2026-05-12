@@ -213,6 +213,7 @@ myKeyBindings =
     , ((myModMask .|. shiftMask, xK_Print), spawn "scrot -u /tmp/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'")
     {- , ((myModMask, xK_Print), spawn "scrot /tmp/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'") -}
     , ((myModMask, xK_Print), spawn "flameshot gui -c")
+    , ((myModMask .|. controlMask, xK_p), spawn "/home/nelson/.xmonad/clip-print.sh")
     , ((0, xF86XK_AudioMute), spawn "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
     , ((0, xF86XK_AudioLowerVolume), spawn "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")
     , ((0, xF86XK_AudioRaiseVolume), spawn "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+")

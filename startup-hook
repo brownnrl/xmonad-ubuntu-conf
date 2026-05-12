@@ -49,7 +49,7 @@ fi
 
 # system tray (top-left, dynamic)
 if ! pgrep -x stalonetray >/dev/null; then
-  TRAY_SLOTS=10
+  TRAY_SLOTS=5
   TRAY_SLOT_SIZE=18
   TRAY_PX=$((TRAY_SLOTS * TRAY_SLOT_SIZE))
 
